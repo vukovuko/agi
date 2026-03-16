@@ -1,0 +1,223 @@
+[
+  {
+    "data": {
+      "prompt": "Ingest all PDFs in the ./knowledge folder and then tell me what they're about",
+      "mockTools": {
+        "ingestDocuments": {
+          "description": "Ingest PDF documents into the knowledge base. Accepts a path to a single PDF file or a directory containing PDFs.",
+          "parameters": { "path": "string", "recursive": "string" },
+          "mockReturn": "Ingested 1 document (27 chunks) from ./knowledge"
+        },
+        "queryKnowledge": {
+          "description": "Search the knowledge base for information relevant to a query. Returns the most relevant document chunks with source information.",
+          "parameters": { "query": "string", "topK": "string" },
+          "mockReturn": "[1] Source: Materijal za pripremu.pdf (chunk 0, score: 0.95)\nAntihistamines and nasal decongestants for self-treatment of allergic rhinitis. Online test preparation material covering pharmaceutical preparations, dosage guidelines, and treatment recommendations for allergy management."
+        },
+        "readFile": {
+          "description": "Read the contents of a file at the specified path",
+          "parameters": { "path": "string" },
+          "mockReturn": "some file contents"
+        }
+      },
+      "config": {
+        "maxSteps": 10
+      }
+    },
+    "target": {
+      "originalTask": "Ingest all PDFs in the ./knowledge folder and then tell me what they're about",
+      "expectedToolOrder": ["ingestDocuments", "queryKnowledge"],
+      "forbiddenTools": ["readFile"],
+      "mockToolResults": {
+        "ingestDocuments": "Ingested 1 document (27 chunks) from ./knowledge",
+        "queryKnowledge": "[1] Source: Materijal za pripremu.pdf (chunk 0, score: 0.95)\nAntihistamines and nasal decongestants for self-treatment of allergic rhinitis."
+      },
+      "category": "task-completion"
+    },
+    "metadata": {
+      "description": "Full RAG pipeline: ingest documents then query them. Should use ingestDocuments first, then queryKnowledge."
+    }
+  },
+  {
+    "data": {
+      "messages": [
+        {
+          "role": "user",
+          "content": "I just ingested a bunch of medical PDFs into the knowledge base"
+        },
+        {
+          "role": "assistant",
+          "content": "Great! Your medical PDFs have been ingested into the knowledge base. You can now ask me questions about the content and I'll search through the documents to find relevant information. What would you like to know?"
+        },
+        {
+          "role": "user",
+          "content": "What do the documents say about antihistamine dosage for children?"
+        }
+      ],
+      "mockTools": {
+        "queryKnowledge": {
+          "description": "Search the knowledge base for information relevant to a query. Returns the most relevant document chunks with source information.",
+          "parameters": { "query": "string", "topK": "string" },
+          "mockReturn": "[1] Source: pediatric-guide.pdf (chunk 7, score: 0.94)\nFor children aged 6-12, cetirizine 5mg once daily is recommended. Loratadine 5mg for ages 2-6. Antihistamine dosing in pediatric patients should be weight-based. Maximum daily dose should not exceed adult recommendations."
+        },
+        "ingestDocuments": {
+          "description": "Ingest PDF documents into the knowledge base.",
+          "parameters": { "path": "string" },
+          "mockReturn": "Ingested 1 document"
+        }
+      },
+      "config": {
+        "maxSteps": 10
+      }
+    },
+    "target": {
+      "originalTask": "What do the documents say about antihistamine dosage for children?",
+      "expectedToolOrder": ["queryKnowledge"],
+      "forbiddenTools": ["ingestDocuments"],
+      "mockToolResults": {
+        "queryKnowledge": "[1] Source: pediatric-guide.pdf (chunk 7, score: 0.94)\nFor children aged 6-12, cetirizine 5mg once daily. Loratadine 5mg for ages 2-6."
+      },
+      "category": "conversation-continuation"
+    },
+    "metadata": {
+      "description": "Mid-conversation: docs already ingested, user asks question. Should query, NOT re-ingest."
+    }
+  },
+  {
+    "data": {
+      "prompt": "What is 2 + 2?",
+      "mockTools": {
+        "ingestDocuments": {
+          "description": "Ingest PDF documents into the knowledge base.",
+          "parameters": { "path": "string" },
+          "mockReturn": "Ingested 1 document"
+        },
+        "queryKnowledge": {
+          "description": "Search the knowledge base for information relevant to a query.",
+          "parameters": { "query": "string" },
+          "mockReturn": "No relevant documents found."
+        }
+      },
+      "config": {
+        "maxSteps": 5
+      }
+    },
+    "target": {
+      "originalTask": "What is 2 + 2?",
+      "forbiddenTools": ["ingestDocuments", "queryKnowledge"],
+      "mockToolResults": {},
+      "category": "negative"
+    },
+    "metadata": {
+      "description": "Negative: math question should NOT use any knowledge tools."
+    }
+  },
+  {
+    "data": {
+      "prompt": "Search my knowledge base for anything related to drug interactions with ibuprofen",
+      "mockTools": {
+        "queryKnowledge": {
+          "description": "Search the knowledge base for information relevant to a query. Returns the most relevant document chunks with source information.",
+          "parameters": { "query": "string", "topK": "string" },
+          "mockReturn": "[1] Source: interactions.pdf (chunk 12, score: 0.97)\nIbuprofen should not be combined with aspirin as it may reduce aspirin's cardioprotective effects. Avoid concurrent use with other NSAIDs. Patients on warfarin should avoid ibuprofen due to increased bleeding risk."
+        },
+        "ingestDocuments": {
+          "description": "Ingest PDF documents into the knowledge base.",
+          "parameters": { "path": "string" },
+          "mockReturn": "Ingested 1 document"
+        }
+      },
+      "config": {
+        "maxSteps": 10
+      }
+    },
+    "target": {
+      "originalTask": "Search my knowledge base for anything related to drug interactions with ibuprofen",
+      "expectedToolOrder": ["queryKnowledge"],
+      "forbiddenTools": ["ingestDocuments"],
+      "mockToolResults": {
+        "queryKnowledge": "[1] Source: interactions.pdf (chunk 12, score: 0.97)\nIbuprofen should not be combined with aspirin. Patients on warfarin should avoid ibuprofen."
+      },
+      "category": "task-completion"
+    },
+    "metadata": {
+      "description": "Direct knowledge query: should use queryKnowledge, not ingest."
+    }
+  },
+  {
+    "data": {
+      "prompt": "Do you remember what we talked about last time regarding the deployment?",
+      "mockTools": {
+        "recallConversations": {
+          "description": "Search past conversation history for relevant context from previous sessions.",
+          "parameters": { "query": "string", "topK": "string" },
+          "mockReturn": "[1] 2026-03-15 (score: 0.93)\nDiscussed deployment strategy for the new API. Decided to use blue-green deployment with Docker Compose. Set up CI/CD pipeline with GitHub Actions."
+        },
+        "queryKnowledge": {
+          "description": "Search the knowledge base for information.",
+          "parameters": { "query": "string" },
+          "mockReturn": "No relevant documents found."
+        }
+      },
+      "config": {
+        "maxSteps": 10
+      }
+    },
+    "target": {
+      "originalTask": "Do you remember what we talked about last time regarding the deployment?",
+      "expectedToolOrder": ["recallConversations"],
+      "forbiddenTools": ["queryKnowledge"],
+      "mockToolResults": {
+        "recallConversations": "[1] 2026-03-15 (score: 0.93)\nDiscussed deployment strategy for the new API. Decided to use blue-green deployment with Docker Compose."
+      },
+      "category": "task-completion"
+    },
+    "metadata": {
+      "description": "Memory recall: user references past conversation. Should use recallConversations, not queryKnowledge."
+    }
+  },
+  {
+    "data": {
+      "messages": [
+        {
+          "role": "user",
+          "content": "I want to learn about the medications in my knowledge base"
+        },
+        {
+          "role": "assistant",
+          "content": "I can help you explore your knowledge base! What specific topic or medication would you like to learn about?"
+        },
+        {
+          "role": "user",
+          "content": "Tell me about side effects of cetirizine and also check if we discussed this in a previous session"
+        }
+      ],
+      "mockTools": {
+        "queryKnowledge": {
+          "description": "Search the knowledge base for information relevant to a query.",
+          "parameters": { "query": "string", "topK": "string" },
+          "mockReturn": "[1] Source: cetirizine.pdf (chunk 4, score: 0.96)\nCommon side effects include drowsiness, dry mouth, and fatigue. Less common: headache and dizziness."
+        },
+        "recallConversations": {
+          "description": "Search past conversation history for relevant context.",
+          "parameters": { "query": "string", "topK": "string" },
+          "mockReturn": "[1] 2026-03-14 (score: 0.85)\nPreviously discussed cetirizine as a first-line treatment for allergic rhinitis. User was interested in dosage guidelines."
+        }
+      },
+      "config": {
+        "maxSteps": 10
+      }
+    },
+    "target": {
+      "originalTask": "Tell me about side effects of cetirizine and also check if we discussed this in a previous session",
+      "expectedToolOrder": ["queryKnowledge", "recallConversations"],
+      "mockToolResults": {
+        "queryKnowledge": "Common side effects: drowsiness, dry mouth, fatigue.",
+        "recallConversations": "Previously discussed cetirizine as first-line treatment."
+      },
+      "category": "conversation-continuation"
+    },
+    "metadata": {
+      "description": "Combined: query knowledge base AND recall past conversations. Should use both tools."
+    }
+  }
+]

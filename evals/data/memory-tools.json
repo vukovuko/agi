@@ -1,0 +1,106 @@
+[
+  {
+    "data": {
+      "prompt": "What did we talk about yesterday?",
+      "tools": ["recallConversations"]
+    },
+    "target": {
+      "expectedTools": ["recallConversations"],
+      "category": "golden"
+    },
+    "metadata": {
+      "description": "Direct past conversation recall - should use recallConversations"
+    }
+  },
+  {
+    "data": {
+      "prompt": "Do you remember what I asked you to do last time?",
+      "tools": ["recallConversations"]
+    },
+    "target": {
+      "expectedTools": ["recallConversations"],
+      "category": "golden"
+    },
+    "metadata": {
+      "description": "Memory recall request - should use recallConversations"
+    }
+  },
+  {
+    "data": {
+      "prompt": "What was that project we were working on before?",
+      "tools": ["recallConversations"]
+    },
+    "target": {
+      "expectedTools": ["recallConversations"],
+      "category": "golden"
+    },
+    "metadata": {
+      "description": "Past project recall - should use recallConversations"
+    }
+  },
+  {
+    "data": {
+      "prompt": "Can you check if we discussed database migrations in a previous session?",
+      "tools": ["recallConversations"]
+    },
+    "target": {
+      "expectedTools": ["recallConversations"],
+      "category": "golden"
+    },
+    "metadata": {
+      "description": "Specific topic recall from past sessions - should use recallConversations"
+    }
+  },
+  {
+    "data": {
+      "prompt": "I think we talked about this before, what was the conclusion?",
+      "tools": ["recallConversations"]
+    },
+    "target": {
+      "expectedTools": ["recallConversations"],
+      "category": "secondary"
+    },
+    "metadata": {
+      "description": "Vague past reference - likely uses recallConversations"
+    }
+  },
+  {
+    "data": {
+      "prompt": "Write a hello world program in JavaScript",
+      "tools": ["recallConversations"]
+    },
+    "target": {
+      "forbiddenTools": ["recallConversations"],
+      "category": "negative"
+    },
+    "metadata": {
+      "description": "Code writing request - should NOT use recallConversations"
+    }
+  },
+  {
+    "data": {
+      "prompt": "What is TypeScript?",
+      "tools": ["recallConversations"]
+    },
+    "target": {
+      "forbiddenTools": ["recallConversations"],
+      "category": "negative"
+    },
+    "metadata": {
+      "description": "General knowledge question - should NOT use recallConversations"
+    }
+  },
+  {
+    "data": {
+      "prompt": "List all files in the current directory",
+      "tools": ["recallConversations"]
+    },
+    "target": {
+      "forbiddenTools": ["recallConversations"],
+      "category": "negative"
+    },
+    "metadata": {
+      "description": "File operation request - should NOT use recallConversations"
+    }
+  }
+]

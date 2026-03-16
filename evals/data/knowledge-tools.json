@@ -1,0 +1,119 @@
+[
+  {
+    "data": {
+      "prompt": "Ingest all PDFs in the ./docs folder",
+      "tools": ["ingestDocuments", "queryKnowledge"]
+    },
+    "target": {
+      "expectedTools": ["ingestDocuments"],
+      "category": "golden"
+    },
+    "metadata": {
+      "description": "Directory ingestion request - should use ingestDocuments"
+    }
+  },
+  {
+    "data": {
+      "prompt": "I have a PDF at ./report.pdf, please add it to the knowledge base",
+      "tools": ["ingestDocuments", "queryKnowledge"]
+    },
+    "target": {
+      "expectedTools": ["ingestDocuments"],
+      "category": "golden"
+    },
+    "metadata": {
+      "description": "Single file ingestion - should use ingestDocuments"
+    }
+  },
+  {
+    "data": {
+      "prompt": "What does the quarterly report say about revenue growth?",
+      "tools": ["ingestDocuments", "queryKnowledge"]
+    },
+    "target": {
+      "expectedTools": ["queryKnowledge"],
+      "category": "golden"
+    },
+    "metadata": {
+      "description": "Knowledge query about document content - should use queryKnowledge"
+    }
+  },
+  {
+    "data": {
+      "prompt": "Search my documents for information about deployment procedures",
+      "tools": ["ingestDocuments", "queryKnowledge"]
+    },
+    "target": {
+      "expectedTools": ["queryKnowledge"],
+      "category": "golden"
+    },
+    "metadata": {
+      "description": "Explicit document search - should use queryKnowledge"
+    }
+  },
+  {
+    "data": {
+      "prompt": "Can you look through the knowledge base and find anything about API rate limits?",
+      "tools": ["ingestDocuments", "queryKnowledge"]
+    },
+    "target": {
+      "expectedTools": ["queryKnowledge"],
+      "category": "secondary"
+    },
+    "metadata": {
+      "description": "Indirect knowledge base query - likely uses queryKnowledge"
+    }
+  },
+  {
+    "data": {
+      "prompt": "Load up all the documentation from ./manuals recursively",
+      "tools": ["ingestDocuments", "queryKnowledge"]
+    },
+    "target": {
+      "expectedTools": ["ingestDocuments"],
+      "category": "secondary"
+    },
+    "metadata": {
+      "description": "Recursive directory ingestion - likely uses ingestDocuments"
+    }
+  },
+  {
+    "data": {
+      "prompt": "What is the capital of France?",
+      "tools": ["ingestDocuments", "queryKnowledge"]
+    },
+    "target": {
+      "forbiddenTools": ["ingestDocuments", "queryKnowledge"],
+      "category": "negative"
+    },
+    "metadata": {
+      "description": "General knowledge question - should NOT use knowledge tools"
+    }
+  },
+  {
+    "data": {
+      "prompt": "Write a Python script that prints hello world",
+      "tools": ["ingestDocuments", "queryKnowledge"]
+    },
+    "target": {
+      "forbiddenTools": ["ingestDocuments", "queryKnowledge"],
+      "category": "negative"
+    },
+    "metadata": {
+      "description": "Code writing request - should NOT use knowledge tools"
+    }
+  },
+  {
+    "data": {
+      "prompt": "How much is 42 times 58?",
+      "tools": ["ingestDocuments", "queryKnowledge"]
+    },
+    "target": {
+      "forbiddenTools": ["ingestDocuments", "queryKnowledge"],
+      "category": "negative"
+    },
+    "metadata": {
+      "description": "Math question - should NOT use knowledge tools"
+    }
+  }
+]

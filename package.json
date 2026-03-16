@@ -1,0 +1,58 @@
+{
+  "name": "agi",
+  "version": "1.0.0",
+  "description": "",
+  "main": "src/index.ts",
+  "type": "module",
+  "bin": {
+    "agi": "./src/cli.ts"
+  },
+  "scripts": {
+    "dev": "tsx watch --env-file=.env src/index.ts",
+    "start": "tsx --env-file=.env src/index.ts",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage",
+    "lint": "biome check",
+    "lint:fix": "biome check --write --unsafe",
+    "format": "biome format --write",
+    "eval": "npx lmnr eval",
+    "eval:file-tools": "npx lmnr eval evals/file-tools.eval.ts",
+    "eval:shell-tools": "npx lmnr eval evals/shell-tools.eval.ts",
+    "eval:agent": "npx lmnr eval evals/agent-multiturn.eval.ts",
+    "eval:knowledge-tools": "npx lmnr eval evals/knowledge-tools.eval.ts",
+    "eval:memory-tools": "npx lmnr eval evals/memory-tools.eval.ts",
+    "eval:rag": "npx lmnr eval evals/rag-multiturn.eval.ts",
+    "db:push": "drizzle-kit push",
+    "db:studio": "drizzle-kit studio"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@ai-sdk/openai": "^3.0.41",
+    "@lmnr-ai/lmnr": "^0.8.14",
+    "ai": "^6.0.116",
+    "dotenv": "^17.3.1",
+    "drizzle-orm": "^0.45.1",
+    "ink": "^6.8.0",
+    "ink-spinner": "^5.0.0",
+    "pdf-parse": "^2.4.5",
+    "pg": "^8.20.0",
+    "react": "^19.2.4",
+    "shelljs": "^0.10.0",
+    "xlsx": "^0.18.5",
+    "zod": "^4.3.6"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "2.4.6",
+    "@types/node": "^25.4.0",
+    "@types/pg": "^8.18.0",
+    "@types/react": "^19.2.14",
+    "@types/shelljs": "^0.10.0",
+    "drizzle-kit": "^0.31.9",
+    "tsx": "^4.21.0",
+    "typescript": "^5.9.3",
+    "vitest": "^4.0.18"
+  }
+}

@@ -1,0 +1,15 @@
+services:
+  postgres:
+    image: pgvector/pgvector:pg17
+    ports:
+      - "5433:5432"
+    environment:
+      POSTGRES_DB: agi
+      POSTGRES_USER: agi
+      POSTGRES_PASSWORD: agi
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+
+volumes:
+  pgdata:

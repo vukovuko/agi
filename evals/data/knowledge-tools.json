@@ -2,114 +2,117 @@
   {
     "data": {
       "prompt": "Ingest all PDFs in the ./docs folder",
-      "tools": ["ingestDocuments", "queryKnowledge"]
+      "tools": ["ingestDocuments", "queryKnowledge", "clearKnowledge"]
     },
     "target": {
       "expectedTools": ["ingestDocuments"],
       "category": "golden"
     },
     "metadata": {
-      "description": "Directory ingestion request - should use ingestDocuments"
+      "description": "Directory ingestion request"
     }
   },
   {
     "data": {
       "prompt": "I have a PDF at ./report.pdf, please add it to the knowledge base",
-      "tools": ["ingestDocuments", "queryKnowledge"]
+      "tools": ["ingestDocuments", "queryKnowledge", "clearKnowledge"]
     },
     "target": {
       "expectedTools": ["ingestDocuments"],
       "category": "golden"
     },
     "metadata": {
-      "description": "Single file ingestion - should use ingestDocuments"
+      "description": "Single file ingestion"
     }
   },
   {
     "data": {
       "prompt": "What does the quarterly report say about revenue growth?",
-      "tools": ["ingestDocuments", "queryKnowledge"]
+      "systemPrompt": "You are a helpful AI assistant with access to a knowledge base.\n\nKnowledge Base:\n- There are currently 3 document(s) in the knowledge base. ALWAYS use queryKnowledge to search the knowledge base BEFORE answering any question that could potentially be covered by these documents.",
+      "tools": ["ingestDocuments", "queryKnowledge", "clearKnowledge"]
     },
     "target": {
       "expectedTools": ["queryKnowledge"],
       "category": "golden"
     },
     "metadata": {
-      "description": "Knowledge query about document content - should use queryKnowledge"
+      "description": "Knowledge query - system prompt says docs exist"
     }
   },
   {
     "data": {
       "prompt": "Search my documents for information about deployment procedures",
-      "tools": ["ingestDocuments", "queryKnowledge"]
+      "systemPrompt": "You are a helpful AI assistant with access to a knowledge base.\n\nKnowledge Base:\n- There are currently 5 document(s) in the knowledge base. ALWAYS use queryKnowledge to search the knowledge base BEFORE answering any question that could potentially be covered by these documents.",
+      "tools": ["ingestDocuments", "queryKnowledge", "clearKnowledge"]
     },
     "target": {
       "expectedTools": ["queryKnowledge"],
       "category": "golden"
     },
     "metadata": {
-      "description": "Explicit document search - should use queryKnowledge"
+      "description": "Explicit document search"
     }
   },
   {
     "data": {
       "prompt": "Can you look through the knowledge base and find anything about API rate limits?",
-      "tools": ["ingestDocuments", "queryKnowledge"]
+      "systemPrompt": "You are a helpful AI assistant with access to a knowledge base.\n\nKnowledge Base:\n- There are currently 2 document(s) in the knowledge base. ALWAYS use queryKnowledge to search the knowledge base BEFORE answering any question that could potentially be covered by these documents.",
+      "tools": ["ingestDocuments", "queryKnowledge", "clearKnowledge"]
     },
     "target": {
       "expectedTools": ["queryKnowledge"],
       "category": "secondary"
     },
     "metadata": {
-      "description": "Indirect knowledge base query - likely uses queryKnowledge"
+      "description": "Indirect knowledge base query"
     }
   },
   {
     "data": {
       "prompt": "Load up all the documentation from ./manuals recursively",
-      "tools": ["ingestDocuments", "queryKnowledge"]
+      "tools": ["ingestDocuments", "queryKnowledge", "clearKnowledge"]
     },
     "target": {
       "expectedTools": ["ingestDocuments"],
       "category": "secondary"
     },
     "metadata": {
-      "description": "Recursive directory ingestion - likely uses ingestDocuments"
+      "description": "Recursive directory ingestion"
     }
   },
   {
     "data": {
       "prompt": "What is the capital of France?",
-      "tools": ["ingestDocuments", "queryKnowledge"]
+      "tools": ["ingestDocuments", "queryKnowledge", "clearKnowledge"]
     },
     "target": {
-      "forbiddenTools": ["ingestDocuments", "queryKnowledge"],
+      "forbiddenTools": ["ingestDocuments", "queryKnowledge", "clearKnowledge"],
       "category": "negative"
     },
     "metadata": {
-      "description": "General knowledge question - should NOT use knowledge tools"
+      "description": "General knowledge - should NOT use knowledge tools"
     }
   },
   {
     "data": {
       "prompt": "Write a Python script that prints hello world",
-      "tools": ["ingestDocuments", "queryKnowledge"]
+      "tools": ["ingestDocuments", "queryKnowledge", "clearKnowledge"]
     },
     "target": {
-      "forbiddenTools": ["ingestDocuments", "queryKnowledge"],
+      "forbiddenTools": ["ingestDocuments", "queryKnowledge", "clearKnowledge"],
       "category": "negative"
     },
     "metadata": {
-      "description": "Code writing request - should NOT use knowledge tools"
+      "description": "Code writing - should NOT use knowledge tools"
     }
   },
   {
     "data": {
       "prompt": "How much is 42 times 58?",
-      "tools": ["ingestDocuments", "queryKnowledge"]
+      "tools": ["ingestDocuments", "queryKnowledge", "clearKnowledge"]
     },
     "target": {
-      "forbiddenTools": ["ingestDocuments", "queryKnowledge"],
+      "forbiddenTools": ["ingestDocuments", "queryKnowledge", "clearKnowledge"],
       "category": "negative"
     },
     "metadata": {

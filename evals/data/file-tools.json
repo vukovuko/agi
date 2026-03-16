@@ -9,7 +9,7 @@
       "category": "golden"
     },
     "metadata": {
-      "description": "Direct file read request - should use readFile"
+      "description": "Direct file read request"
     }
   },
   {
@@ -22,7 +22,7 @@
       "category": "golden"
     },
     "metadata": {
-      "description": "Directory listing request - should use listFiles"
+      "description": "Directory listing request"
     }
   },
   {
@@ -35,12 +35,12 @@
       "category": "golden"
     },
     "metadata": {
-      "description": "File creation request - should use writeFile"
+      "description": "File creation request"
     }
   },
   {
     "data": {
-      "prompt": "Remove the old backup.txt file",
+      "prompt": "Delete the file at ./tmp/old-backup.txt",
       "tools": ["readFile", "writeFile", "listFiles", "deleteFile"]
     },
     "target": {
@@ -48,7 +48,7 @@
       "category": "golden"
     },
     "metadata": {
-      "description": "File deletion request - should use deleteFile"
+      "description": "File deletion request with explicit path"
     }
   },
   {
@@ -61,7 +61,7 @@
       "category": "secondary"
     },
     "metadata": {
-      "description": "Ambiguous exploration request - likely uses listFiles"
+      "description": "Ambiguous exploration request"
     }
   },
   {
@@ -74,7 +74,7 @@
       "category": "secondary"
     },
     "metadata": {
-      "description": "Exploration request - might use listFiles and/or readFile"
+      "description": "Exploration request"
     }
   },
   {
@@ -87,7 +87,7 @@
       "category": "negative"
     },
     "metadata": {
-      "description": "General knowledge question - should NOT use any file tools"
+      "description": "General knowledge question"
     }
   },
   {
@@ -100,7 +100,7 @@
       "category": "negative"
     },
     "metadata": {
-      "description": "Entertainment request - should NOT use any file tools"
+      "description": "Entertainment request"
     }
   },
   {
@@ -113,7 +113,7 @@
       "category": "negative"
     },
     "metadata": {
-      "description": "Math calculation - should NOT use any file tools"
+      "description": "Math calculation"
     }
   }
 ]

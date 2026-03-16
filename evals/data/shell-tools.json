@@ -9,7 +9,7 @@
       "category": "golden"
     },
     "metadata": {
-      "description": "Package installation request - should use runCommand"
+      "description": "Package installation request"
     }
   },
   {
@@ -22,7 +22,7 @@
       "category": "golden"
     },
     "metadata": {
-      "description": "Test execution request - should use runCommand"
+      "description": "Test execution request"
     }
   },
   {
@@ -35,7 +35,7 @@
       "category": "golden"
     },
     "metadata": {
-      "description": "Git status request - should use runCommand"
+      "description": "Git status request"
     }
   },
   {
@@ -48,12 +48,12 @@
       "category": "golden"
     },
     "metadata": {
-      "description": "Build request - should use runCommand"
+      "description": "Build request"
     }
   },
   {
     "data": {
-      "prompt": "Can you start the development server?",
+      "prompt": "Start the development server by running npm run dev",
       "tools": ["runCommand"]
     },
     "target": {
@@ -61,12 +61,12 @@
       "category": "secondary"
     },
     "metadata": {
-      "description": "Dev server request - likely uses runCommand"
+      "description": "Dev server request"
     }
   },
   {
     "data": {
-      "prompt": "Help me set up the project",
+      "prompt": "Run docker compose up to start the database",
       "tools": ["runCommand"]
     },
     "target": {
@@ -74,7 +74,7 @@
       "category": "secondary"
     },
     "metadata": {
-      "description": "Setup request - might use runCommand"
+      "description": "Docker command request"
     }
   },
   {
@@ -87,7 +87,7 @@
       "category": "negative"
     },
     "metadata": {
-      "description": "General knowledge question - should NOT use shell"
+      "description": "General knowledge question"
     }
   },
   {
@@ -100,7 +100,7 @@
       "category": "negative"
     },
     "metadata": {
-      "description": "Explanation request - should NOT use shell"
+      "description": "Explanation request"
     }
   },
   {
@@ -113,7 +113,7 @@
       "category": "negative"
     },
     "metadata": {
-      "description": "Language question - should NOT use shell"
+      "description": "Language question"
     }
   }
 ]

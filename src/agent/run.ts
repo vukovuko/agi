@@ -38,6 +38,24 @@ if (process.env.LMNR_PROJECT_API_KEY) {
 
 const MODEL_NAME = "gpt-5-mini";
 
+// TODO: make this dynamic replace heuristics with a lightweight classifier
+type ReasoningEffort = "low" | "medium" | "high";
+
+function classifyReasoningEffort(message: string): ReasoningEffort {
+  const lower = message.toLowerCase().trim();
+  const wordCount = lower.split(/\s+/).length;
+
+  const highPatterns =
+    /\b(analyze|refactor|debug|explain why|architecture|design|compare|trade-?offs?|optimize|review|plan|implement|build|create a .{20,})\b/;
+  if (highPatterns.test(lower) || wordCount > 40) return "high";
+
+  const lowPatterns =
+    /^(read|show|list|delete|run|execute|open|cat|ls|cd|npm |git |mkdir|rm )/;
+  if (lowPatterns.test(lower) && wordCount < 15) return "low";
+
+  return "medium";
+}
+
 function wrapToolsWithApproval(
   originalTools: ToolSet,
   callbacks: AgentCallbacks,
@@ -145,12 +163,16 @@ export async function runAgent(
   reportTokenUsage();
 
   const approvedTools = wrapToolsWithApproval(rawTools, callbacks);
+  const reasoningEffort = classifyReasoningEffort(userMessage);
 
   const result = streamText({
     model: openai.chat(MODEL_NAME),
     messages,
     tools: approvedTools,
     stopWhen: stepCountIs(20),
+    providerOptions: {
+      openai: { reasoningEffort },
+    },
     ...(process.env.LMNR_PROJECT_API_KEY && {
       experimental_telemetry: {
         isEnabled: true,

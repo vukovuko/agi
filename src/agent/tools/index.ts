@@ -7,6 +7,7 @@ import {
   clearKnowledge,
 } from "./knowledge.ts";
 import { recallConversations } from "./memory.ts";
+import { httpRequest } from "./http.ts";
 
 export const tools = {
   readFile,
@@ -15,6 +16,7 @@ export const tools = {
   deleteFile,
   runCommand,
   executeCode,
+  httpRequest,
   ingestDocuments,
   queryKnowledge,
   clearKnowledge,
@@ -41,6 +43,10 @@ export const knowledgeTools = {
   ingestDocuments,
   queryKnowledge,
   clearKnowledge,
+};
+
+export const httpTools = {
+  httpRequest,
 };
 
 export const memoryTools = {

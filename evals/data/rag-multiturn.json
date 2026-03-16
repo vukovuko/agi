@@ -4,7 +4,7 @@
       "prompt": "Ingest all PDFs in the ./knowledge folder and then tell me what they're about",
       "mockTools": {
         "ingestDocuments": {
-          "description": "Ingest PDF documents into the knowledge base. Accepts a path to a single PDF file or a directory containing PDFs.",
+          "description": "Ingest documents into the knowledge base. Supports PDF, TXT, MD, CSV, JSON, XLSX, and XLS files.",
           "parameters": { "path": "string", "recursive": "string" },
           "mockReturn": "Ingested 1 document (27 chunks) from ./knowledge"
         },
@@ -29,12 +29,12 @@
       "forbiddenTools": ["readFile"],
       "mockToolResults": {
         "ingestDocuments": "Ingested 1 document (27 chunks) from ./knowledge",
-        "queryKnowledge": "[1] Source: Materijal za pripremu.pdf (chunk 0, score: 0.95)\nAntihistamines and nasal decongestants for self-treatment of allergic rhinitis."
+        "queryKnowledge": "[1] Source: Materijal za pripremu.pdf (chunk 0, score: 0.95)\nAntihistamines and nasal decongestants for self-treatment of allergic rhinitis. Online test preparation material covering pharmaceutical preparations, dosage guidelines, and treatment recommendations for allergy management."
       },
       "category": "task-completion"
     },
     "metadata": {
-      "description": "Full RAG pipeline: ingest documents then query them. Should use ingestDocuments first, then queryKnowledge."
+      "description": "Full RAG pipeline: ingest documents then query them."
     }
   },
   {
@@ -60,7 +60,7 @@
           "mockReturn": "[1] Source: pediatric-guide.pdf (chunk 7, score: 0.94)\nFor children aged 6-12, cetirizine 5mg once daily is recommended. Loratadine 5mg for ages 2-6. Antihistamine dosing in pediatric patients should be weight-based. Maximum daily dose should not exceed adult recommendations."
         },
         "ingestDocuments": {
-          "description": "Ingest PDF documents into the knowledge base.",
+          "description": "Ingest documents into the knowledge base.",
           "parameters": { "path": "string" },
           "mockReturn": "Ingested 1 document"
         }
@@ -74,12 +74,12 @@
       "expectedToolOrder": ["queryKnowledge"],
       "forbiddenTools": ["ingestDocuments"],
       "mockToolResults": {
-        "queryKnowledge": "[1] Source: pediatric-guide.pdf (chunk 7, score: 0.94)\nFor children aged 6-12, cetirizine 5mg once daily. Loratadine 5mg for ages 2-6."
+        "queryKnowledge": "[1] Source: pediatric-guide.pdf (chunk 7, score: 0.94)\nFor children aged 6-12, cetirizine 5mg once daily is recommended. Loratadine 5mg for ages 2-6. Antihistamine dosing in pediatric patients should be weight-based. Maximum daily dose should not exceed adult recommendations."
       },
       "category": "conversation-continuation"
     },
     "metadata": {
-      "description": "Mid-conversation: docs already ingested, user asks question. Should query, NOT re-ingest."
+      "description": "Mid-conversation: docs already ingested, user asks question."
     }
   },
   {
@@ -87,7 +87,7 @@
       "prompt": "What is 2 + 2?",
       "mockTools": {
         "ingestDocuments": {
-          "description": "Ingest PDF documents into the knowledge base.",
+          "description": "Ingest documents into the knowledge base.",
           "parameters": { "path": "string" },
           "mockReturn": "Ingested 1 document"
         },
@@ -121,7 +121,7 @@
           "mockReturn": "[1] Source: interactions.pdf (chunk 12, score: 0.97)\nIbuprofen should not be combined with aspirin as it may reduce aspirin's cardioprotective effects. Avoid concurrent use with other NSAIDs. Patients on warfarin should avoid ibuprofen due to increased bleeding risk."
         },
         "ingestDocuments": {
-          "description": "Ingest PDF documents into the knowledge base.",
+          "description": "Ingest documents into the knowledge base.",
           "parameters": { "path": "string" },
           "mockReturn": "Ingested 1 document"
         }
@@ -135,7 +135,7 @@
       "expectedToolOrder": ["queryKnowledge"],
       "forbiddenTools": ["ingestDocuments"],
       "mockToolResults": {
-        "queryKnowledge": "[1] Source: interactions.pdf (chunk 12, score: 0.97)\nIbuprofen should not be combined with aspirin. Patients on warfarin should avoid ibuprofen."
+        "queryKnowledge": "[1] Source: interactions.pdf (chunk 12, score: 0.97)\nIbuprofen should not be combined with aspirin as it may reduce aspirin's cardioprotective effects. Avoid concurrent use with other NSAIDs. Patients on warfarin should avoid ibuprofen due to increased bleeding risk."
       },
       "category": "task-completion"
     },
@@ -167,12 +167,12 @@
       "expectedToolOrder": ["recallConversations"],
       "forbiddenTools": ["queryKnowledge"],
       "mockToolResults": {
-        "recallConversations": "[1] 2026-03-15 (score: 0.93)\nDiscussed deployment strategy for the new API. Decided to use blue-green deployment with Docker Compose."
+        "recallConversations": "[1] 2026-03-15 (score: 0.93)\nDiscussed deployment strategy for the new API. Decided to use blue-green deployment with Docker Compose. Set up CI/CD pipeline with GitHub Actions."
       },
       "category": "task-completion"
     },
     "metadata": {
-      "description": "Memory recall: user references past conversation. Should use recallConversations, not queryKnowledge."
+      "description": "Memory recall: user references past conversation."
     }
   },
   {
@@ -211,13 +211,13 @@
       "originalTask": "Tell me about side effects of cetirizine and also check if we discussed this in a previous session",
       "expectedToolOrder": ["queryKnowledge", "recallConversations"],
       "mockToolResults": {
-        "queryKnowledge": "Common side effects: drowsiness, dry mouth, fatigue.",
-        "recallConversations": "Previously discussed cetirizine as first-line treatment."
+        "queryKnowledge": "[1] Source: cetirizine.pdf (chunk 4, score: 0.96)\nCommon side effects include drowsiness, dry mouth, and fatigue. Less common: headache and dizziness.",
+        "recallConversations": "[1] 2026-03-14 (score: 0.85)\nPreviously discussed cetirizine as a first-line treatment for allergic rhinitis. User was interested in dosage guidelines."
       },
       "category": "conversation-continuation"
     },
     "metadata": {
-      "description": "Combined: query knowledge base AND recall past conversations. Should use both tools."
+      "description": "Combined: query knowledge base AND recall past conversations."
     }
   }
 ]

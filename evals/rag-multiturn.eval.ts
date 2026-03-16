@@ -1,5 +1,10 @@
 import { evaluate } from "@lmnr-ai/lmnr";
-import { toolOrderCorrect, toolsAvoided, llmJudge } from "./evaluators.ts";
+import {
+  toolOrderCorrect,
+  toolsAvoided,
+  llmJudge,
+  llmJudgeNegative,
+} from "./evaluators.ts";
 import type {
   MultiTurnEvalData,
   MultiTurnTarget,
@@ -29,6 +34,8 @@ evaluate({
     },
     outputQuality: async (output, target) => {
       if (!target) return 1;
+      if (target.category === "negative")
+        return llmJudgeNegative(output, target);
       return llmJudge(output, target);
     },
   },

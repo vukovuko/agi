@@ -109,22 +109,65 @@ export async function llmJudge(
         content: `You are an evaluation judge. Score the agent's response on a scale of 1-10.
 
 Scoring criteria:
-- 10: Response fully addresses the task using tool results correctly
-- 7-9: Response is mostly correct with minor issues
-- 4-6: Response partially addresses the task
-- 1-3: Response is mostly incorrect or irrelevant`,
+- 9-10: Response directly answers the task, references specific information from tool results, and is accurate
+- 7-8: Response answers the task using tool results but misses some details or adds unnecessary filler
+- 4-6: Response is vague, only partially uses tool results, or adds information not from the tools
+- 1-3: Response ignores tool results or is wrong
+
+Important: The agent SHOULD use information from the tool results in its answer. A good response incorporates the key facts returned by tools. Do NOT penalize for being concise or for minor phrasing differences.`,
       },
       {
         role: "user",
-        content: `Task: ${target.originalTask}
+        content: `Task: "${target.originalTask}"
 
-Tools called: ${JSON.stringify(output.toolCallOrder)}
-Tool results provided: ${JSON.stringify(target.mockToolResults)}
+Tools the agent called (in order): ${output.toolCallOrder.join(" → ")}
+
+Data returned by those tools:
+${Object.entries(target.mockToolResults)
+  .map(([tool, result]) => `${tool}: ${result}`)
+  .join("\n\n")}
 
 Agent's final response:
-${output.text}
+"${output.text}"
 
-Evaluate if this response correctly uses the tool results to answer the task.`,
+Score how well the agent used the tool data to answer the task.`,
+      },
+    ],
+  });
+
+  return result.object.score / 10;
+}
+
+export async function llmJudgeNegative(
+  output: MultiTurnResult,
+  target: MultiTurnTarget,
+): Promise<number> {
+  const result = await generateObject({
+    model: openai("gpt-5.1"),
+    schema: judgeSchema,
+    schemaName: "evaluation",
+    schemaDescription: "Evaluation of an AI agent response",
+    messages: [
+      {
+        role: "system",
+        content: `You are an evaluation judge. Score the agent's response on a scale of 1-10.
+
+The agent was asked a simple question that does NOT require any tools. Score based on:
+- 9-10: Correct answer, no unnecessary tool usage
+- 7-8: Correct answer but slightly verbose or hedging
+- 4-6: Partially correct or unnecessarily complicated
+- 1-3: Wrong answer or tried to use tools when it shouldn't have`,
+      },
+      {
+        role: "user",
+        content: `Task: "${target.originalTask}"
+
+Tools called: ${output.toolCallOrder.length === 0 ? "none" : output.toolCallOrder.join(" → ")}
+
+Agent's response:
+"${output.text}"
+
+Score the response.`,
       },
     ],
   });

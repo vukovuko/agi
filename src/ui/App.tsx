@@ -26,14 +26,30 @@ export function App() {
   const [pendingApproval, setPendingApproval] =
     useState<ToolApprovalRequest | null>(null);
   const [tokenUsage, setTokenUsage] = useState<TokenUsageInfo | null>(null);
+  const [autoMode, setAutoMode] = useState(true);
 
   const handleSubmit = useCallback(
     async (userInput: string) => {
-      if (
-        userInput.toLowerCase() === "exit" ||
-        userInput.toLowerCase() === "quit"
-      ) {
+      const lower = userInput.toLowerCase().trim();
+      if (lower === "exit" || lower === "quit") {
         exit();
+        return;
+      }
+
+      if (lower === "/auto") {
+        setAutoMode((prev) => {
+          const next = !prev;
+          setMessages((m) => [
+            ...m,
+            {
+              role: "assistant",
+              content: next
+                ? "Autonomous mode ON — safe tools (read, list, query, http) will run without approval."
+                : "Autonomous mode OFF — all tools require approval.",
+            },
+          ]);
+          return next;
+        });
         return;
       }
 
@@ -85,6 +101,7 @@ export function App() {
           onTokenUsage: (usage) => {
             setTokenUsage(usage);
           },
+          autoMode,
         });
 
         setConversationHistory(newHistory);
@@ -99,7 +116,7 @@ export function App() {
         setIsLoading(false);
       }
     },
-    [conversationHistory, exit],
+    [conversationHistory, exit, autoMode],
   );
 
   return (
@@ -108,7 +125,11 @@ export function App() {
         <Text bold color="magenta">
           🤖 AI Agent
         </Text>
-        <Text dimColor> (type "exit" to quit)</Text>
+        <Text dimColor>
+          {" "}
+          (type "exit" to quit, "/auto" to toggle auto mode)
+        </Text>
+        {autoMode && <Text color="yellow"> [AUTO]</Text>}
       </Box>
 
       <Box flexDirection="column" marginBottom={1}>

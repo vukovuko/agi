@@ -1,3 +1,11 @@
+export const SAFE_TOOLS = new Set([
+  "readFile",
+  "listFiles",
+  "queryKnowledge",
+  "recallConversations",
+  "httpRequest",
+]);
+
 export interface AgentCallbacks {
   onToken: (token: string) => void;
   onToolCallStart: (name: string, args: unknown) => void;
@@ -5,6 +13,7 @@ export interface AgentCallbacks {
   onComplete: (response: string) => void;
   onToolApproval: (name: string, args: unknown) => Promise<boolean>;
   onTokenUsage?: (usage: TokenUsageInfo) => void;
+  autoMode?: boolean;
 }
 
 export interface ToolApprovalRequest {

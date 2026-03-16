@@ -15,7 +15,7 @@ import { getDb } from "../db/index.ts";
 import { documents } from "../db/schema.ts";
 import { sql } from "drizzle-orm";
 import { Laminar } from "@lmnr-ai/lmnr";
-import type { AgentCallbacks } from "../types.ts";
+import { type AgentCallbacks, SAFE_TOOLS } from "../types.ts";
 import {
   estimateMessagesTokens,
   getModelLimits,
@@ -36,24 +36,31 @@ if (process.env.LMNR_PROJECT_API_KEY) {
   });
 }
 
-const MODEL_NAME = "gpt-5-mini";
-
-// TODO: make this dynamic replace heuristics with a lightweight classifier
+// TODO: make this dynamic — replace heuristics with a lightweight classifier
 type ReasoningEffort = "low" | "medium" | "high";
 
-function classifyReasoningEffort(message: string): ReasoningEffort {
+interface TaskClassification {
+  model: string;
+  reasoningEffort: ReasoningEffort;
+}
+
+function classifyTask(message: string): TaskClassification {
   const lower = message.toLowerCase().trim();
   const wordCount = lower.split(/\s+/).length;
 
   const highPatterns =
     /\b(analyze|refactor|debug|explain why|architecture|design|compare|trade-?offs?|optimize|review|plan|implement|build|create a .{20,})\b/;
-  if (highPatterns.test(lower) || wordCount > 40) return "high";
+  if (highPatterns.test(lower) || wordCount > 40) {
+    return { model: "gpt-5", reasoningEffort: "high" };
+  }
 
   const lowPatterns =
     /^(read|show|list|delete|run|execute|open|cat|ls|cd|npm |git |mkdir|rm )/;
-  if (lowPatterns.test(lower) && wordCount < 15) return "low";
+  if (lowPatterns.test(lower) && wordCount < 15) {
+    return { model: "gpt-5-mini", reasoningEffort: "low" };
+  }
 
-  return "medium";
+  return { model: "gpt-5-mini", reasoningEffort: "medium" };
 }
 
 function wrapToolsWithApproval(
@@ -75,10 +82,13 @@ function wrapToolsWithApproval(
       execute: async (args: unknown, context: unknown) => {
         callbacks.onToolCallStart(name, args);
 
-        const approved = await callbacks.onToolApproval(
-          name,
-          args as Record<string, unknown>,
-        );
+        const autoApproved = callbacks.autoMode && SAFE_TOOLS.has(name);
+        const approved =
+          autoApproved ||
+          (await callbacks.onToolApproval(
+            name,
+            args as Record<string, unknown>,
+          ));
         if (!approved) {
           return "Tool execution was rejected by the user.";
         }
@@ -100,7 +110,8 @@ export async function runAgent(
   callbacks: AgentCallbacks,
 ): Promise<ModelMessage[]> {
   const conversationStartedAt = new Date();
-  const modelLimits = getModelLimits(MODEL_NAME);
+  const { model: modelName, reasoningEffort } = classifyTask(userMessage);
+  const modelLimits = getModelLimits(modelName);
 
   let documentCount = 0;
   try {
@@ -123,7 +134,7 @@ export async function runAgent(
   ]);
 
   if (isOverThreshold(preCheckTokens.total, modelLimits.contextWindow)) {
-    workingHistory = await compactConversation(workingHistory, MODEL_NAME);
+    workingHistory = await compactConversation(workingHistory, modelName);
   }
 
   let systemContent = baseSystemPrompt;
@@ -163,10 +174,9 @@ export async function runAgent(
   reportTokenUsage();
 
   const approvedTools = wrapToolsWithApproval(rawTools, callbacks);
-  const reasoningEffort = classifyReasoningEffort(userMessage);
 
   const result = streamText({
-    model: openai.chat(MODEL_NAME),
+    model: openai.chat(modelName),
     messages,
     tools: approvedTools,
     stopWhen: stepCountIs(20),

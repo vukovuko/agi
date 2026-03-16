@@ -7,7 +7,14 @@ import {
   jsonb,
   index,
   vector,
+  customType,
 } from "drizzle-orm/pg-core";
+
+const tsvector = customType<{ data: string }>({
+  dataType() {
+    return "tsvector";
+  },
+});
 
 export const documents = pgTable("documents", {
   id: uuid("id").defaultRandom().primaryKey(),
@@ -28,6 +35,7 @@ export const chunks = pgTable(
     content: text("content").notNull(),
     chunkIndex: integer("chunk_index").notNull(),
     embedding: vector("embedding", { dimensions: 1536 }).notNull(),
+    searchVector: tsvector("search_vector"),
     metadata: jsonb("metadata").$type<Record<string, unknown>>().default({}),
     createdAt: timestamp("created_at").defaultNow(),
   },
@@ -36,6 +44,7 @@ export const chunks = pgTable(
       "hnsw",
       table.embedding.op("vector_cosine_ops"),
     ),
+    index("chunks_search_idx").using("gin", table.searchVector),
   ],
 );
 

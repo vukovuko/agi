@@ -2,7 +2,7 @@ import { readdir, stat } from "node:fs/promises";
 import { join, basename, resolve } from "node:path";
 import { requireDb } from "../db/index.ts";
 import { documents, chunks } from "../db/schema.ts";
-import { eq } from "drizzle-orm";
+import { eq, sql } from "drizzle-orm";
 import { parseFile, isSupportedFile } from "./fileParser.ts";
 import { chunkText } from "./chunker.ts";
 import { embedBatch } from "./embeddings.ts";
@@ -50,6 +50,7 @@ export async function ingestFile(
       content,
       chunkIndex: i,
       embedding: embeddings[i],
+      searchVector: sql`to_tsvector('simple', ${content})`,
     })),
   );
 

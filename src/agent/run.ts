@@ -181,17 +181,29 @@ export async function runAgent(
     }),
   });
 
-  for await (const chunk of result.textStream) {
-    fullResponse += chunk;
-    callbacks.onToken(chunk);
+  try {
+    for await (const chunk of result.textStream) {
+      fullResponse += chunk;
+      callbacks.onToken(chunk);
+    }
+  } catch (error) {
+    if (!fullResponse) {
+      const fallback =
+        "I wasn't able to generate a response. Could you please try rephrasing your message?";
+      fullResponse = fallback;
+      callbacks.onToken(fallback);
+    }
   }
 
-  const response = await result.response;
-  messages.push(...response.messages);
+  try {
+    const response = await result.response;
+    messages.push(...response.messages);
+  } catch {
+    messages.push({ role: "assistant", content: fullResponse });
+  }
+
   reportTokenUsage();
-
   callbacks.onComplete(fullResponse);
-
   saveConversationMemory(messages, conversationStartedAt).catch(() => {});
 
   return messages;

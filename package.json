@@ -5,9 +5,10 @@
   "main": "src/index.ts",
   "type": "module",
   "bin": {
-    "agi": "./src/cli.ts"
+    "agi": "./dist/cli.js"
   },
   "scripts": {
+    "build": "tsc -p tsconfig.build.json",
     "dev": "tsx watch --env-file=.env src/index.ts",
     "start": "tsx --env-file=.env src/index.ts",
     "test": "vitest run",

@@ -6,20 +6,6 @@ interface InputProps {
   disabled?: boolean;
 }
 
-function findWordBoundaryLeft(text: string, pos: number): number {
-  let i = pos;
-  while (i > 0 && text[i - 1] === " ") i--;
-  while (i > 0 && text[i - 1] !== " ") i--;
-  return i;
-}
-
-function findWordBoundaryRight(text: string, pos: number): number {
-  let i = pos;
-  while (i < text.length && text[i] !== " ") i++;
-  while (i < text.length && text[i] === " ") i++;
-  return i;
-}
-
 export function Input({ onSubmit, disabled = false }: InputProps) {
   const [value, setValue] = useState("");
   const [cursor, setCursor] = useState(0);
@@ -45,13 +31,10 @@ export function Input({ onSubmit, disabled = false }: InputProps) {
         return;
       }
 
-      if (key.leftArrow && key.ctrl) {
-        setCursor(findWordBoundaryLeft(value, cursor));
-        return;
-      }
-
-      if (key.rightArrow && key.ctrl) {
-        setCursor(findWordBoundaryRight(value, cursor));
+      // Ctrl+U: clear entire line
+      if (key.ctrl && input === "u") {
+        setValue("");
+        setCursor(0);
         return;
       }
 

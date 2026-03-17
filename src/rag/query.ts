@@ -1,6 +1,7 @@
 import { sql } from "drizzle-orm";
 import { requireDb } from "../db/index.ts";
 import { embed } from "./embeddings.ts";
+import { rerank } from "./reranker.ts";
 
 export interface ChunkResult {
   content: string;
@@ -52,14 +53,23 @@ export async function queryChunks(
     FROM semantic s
     FULL OUTER JOIN keyword k ON s.id = k.id
     ORDER BY rrf_score DESC
-    LIMIT ${topK}
+    LIMIT ${topK * 2}
   `);
 
-  return results.rows.map((r: Record<string, unknown>) => ({
+  const candidates = results.rows.map((r: Record<string, unknown>) => ({
     content: r.content as string,
     fileName: r.file_name as string,
     filePath: r.file_path as string,
     chunkIndex: r.chunk_index as number,
     score: Number(r.rrf_score),
   }));
+
+  if (candidates.length <= 1) return candidates;
+
+  try {
+    const rankedIndices = await rerank(queryText, candidates);
+    return rankedIndices.slice(0, topK).map((i) => candidates[i]);
+  } catch {
+    return candidates.slice(0, topK);
+  }
 }

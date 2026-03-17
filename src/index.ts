@@ -17,4 +17,9 @@ async function main() {
   render(React.createElement(App));
 }
 
-main();
+main().catch((error) => {
+  console.error(
+    `\x1b[31m${error instanceof Error ? error.message : "Unexpected error"}\x1b[0m`,
+  );
+  process.exit(1);
+});

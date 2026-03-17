@@ -5,25 +5,20 @@ config();
 
 const envSchema = z.object({
   OPENAI_API_KEY: z.string().min(1, "OPENAI_API_KEY is required"),
-  DATABASE_URL: z.string().startsWith("postgresql://").optional(),
+  DATABASE_URL: z.string().startsWith("postgresql://"),
   LMNR_PROJECT_API_KEY: z.string().optional(),
 });
 
-export type Env = z.infer<typeof envSchema>;
+const parsed = envSchema.safeParse(process.env);
 
-let env: Env;
-
-try {
-  env = envSchema.parse(process.env);
-} catch (error) {
-  if (error instanceof z.ZodError) {
-    console.error("Invalid environment variables:");
-    const tree = z.treeifyError(error);
-    console.error(JSON.stringify(tree, null, 2));
-    process.exit(1);
-  }
-  throw error;
+if (!parsed.success) {
+  console.error("Invalid environment variables:");
+  console.error(z.prettifyError(parsed.error));
+  process.exit(1);
 }
 
+const env = parsed.data;
+
+export type Env = z.infer<typeof envSchema>;
 export { env };
 export default env;

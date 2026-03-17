@@ -37,7 +37,7 @@ export function Input({ onSubmit, disabled = false }: InputProps) {
         return;
       }
 
-      if (key.backspace) {
+      if (key.backspace || key.delete) {
         if (cursor > 0) {
           setValue(value.slice(0, cursor - 1) + value.slice(cursor));
           setCursor(cursor - 1);

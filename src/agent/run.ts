@@ -15,6 +15,7 @@ import { getDb } from "../db/index.ts";
 import { documents } from "../db/schema.ts";
 import { sql } from "drizzle-orm";
 import { Laminar } from "@lmnr-ai/lmnr";
+import { env } from "../../env.ts";
 import { type AgentCallbacks, SAFE_TOOLS } from "../types.ts";
 import {
   estimateMessagesTokens,
@@ -30,9 +31,9 @@ import {
   recallRelevantMemories,
 } from "./memory/conversationMemory.ts";
 
-if (process.env.LMNR_PROJECT_API_KEY) {
+if (env.LMNR_PROJECT_API_KEY) {
   Laminar.initialize({
-    projectApiKey: process.env.LMNR_PROJECT_API_KEY,
+    projectApiKey: env.LMNR_PROJECT_API_KEY,
   });
 }
 
@@ -183,7 +184,7 @@ export async function runAgent(
     providerOptions: {
       openai: { reasoningEffort },
     },
-    ...(process.env.LMNR_PROJECT_API_KEY && {
+    ...(env.LMNR_PROJECT_API_KEY && {
       experimental_telemetry: {
         isEnabled: true,
         tracer: getTracer(),
